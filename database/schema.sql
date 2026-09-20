@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 20, 2026 at 08:52 AM
+-- Generation Time: Sep 20, 2026 at 09:22 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -151,7 +151,19 @@ INSERT INTO `parking_slot` (`slot_number`, `slot_type`, `status`, `location_id`)
 ('B03', 'Bike', 'Available', 1),
 ('C01', 'Car', 'Available', 1),
 ('C02', 'Car', 'Available', 1),
-('C03', 'Car', 'Available', 1);
+('C03', 'Car', 'Available', 1),
+('F-B01', 'Bike', 'Available', 3),
+('F-B02', 'Bike', 'Available', 3),
+('F-B03', 'Bike', 'Available', 3),
+('F-C01', 'Car', 'Available', 3),
+('F-C02', 'Car', 'Available', 3),
+('F-C03', 'Car', 'Available', 3),
+('L-B01', 'Bike', 'Available', 2),
+('L-B02', 'Bike', 'Available', 2),
+('L-B03', 'Bike', 'Available', 2),
+('L-C01', 'Car', 'Available', 2),
+('L-C02', 'Car', 'Available', 2),
+('L-C03', 'Car', 'Available', 2);
 
 -- --------------------------------------------------------
 
