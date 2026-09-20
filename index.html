@@ -1,0 +1,3126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ParkWise — Smart Parking. Smoother Journeys.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060a08;
+  --bg-deep: #030604;
+  --surface: #0d1511;
+  --surface-elevated: #13201a;
+  --surface-border: rgba(46, 125, 82, 0.22);
+  --surface-border-hover: rgba(74, 222, 128, 0.45);
+  
+  --brand-deep: #0F5132;
+  --brand-forest: #14422b;
+  --brand-green: #2E7D52;
+  --brand-sage: #A7D7B5;
+  --brand-mint: #E5F2EA;
+  --brand-accent: #10b981;
+  --brand-glow: rgba(16, 185, 129, 0.35);
+
+  --text-primary: #f0fdf4;
+  --text-secondary: #a7d7b5;
+  --text-muted: #6b8577;
+  
+  --green-glow: #10b981;
+  --red-glow: #f43f5e;
+  --amber-glow: #f59e0b;
+  
+  --card-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(15, 81, 50, 0.15);
+  --glass-bg: rgba(13, 21, 17, 0.82);
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
+  background-color: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  line-height: 1.5;
+}
+
+/* Custom Dark Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #070b09; }
+::-webkit-scrollbar-thumb { background: #1b3829; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #2e7d52; }
+
+/* Interactive Astra Canvas Background */
+#astraCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.95;
+}
+
+/* Ambient Radial Lighting */
+.ambient-glow {
+  position: fixed;
+  top: 0;
+  left: 270px;
+  right: 0;
+  height: 600px;
+  background: radial-gradient(circle at 50% -10%, rgba(46, 125, 82, 0.22) 0%, rgba(15, 81, 50, 0.09) 45%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* App Shell Layout */
+.app {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  z-index: 2;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 270px;
+  background: rgba(8, 14, 11, 0.9);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-right: 1px solid var(--surface-border);
+  padding: 24px 18px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 24px;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(46, 125, 82, 0.15);
+  margin-bottom: 18px;
+  cursor: pointer;
+}
+
+.brand-logo-svg {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 12px rgba(16, 185, 129, 0.4));
+  transition: transform 0.3s ease;
+}
+.brand-container:hover .brand-logo-svg {
+  transform: rotate(-3deg) scale(1.06);
+}
+
+.brand-text h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.brand-text h1 span {
+  color: var(--brand-accent);
+}
+.brand-text p {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--brand-sage);
+  letter-spacing: 0.2px;
+}
+
+/* Sidebar Navigation */
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.nav-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  font-weight: 700;
+  padding: 10px 14px 6px;
+}
+
+.nav button {
+  background: transparent;
+  color: #9ab3a4;
+  border: 1px solid transparent;
+  text-align: left;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav button svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  transition: transform 0.2s ease;
+}
+
+.nav button:hover {
+  background: rgba(46, 125, 82, 0.15);
+  color: #e5f2ea;
+  border-color: rgba(46, 125, 82, 0.3);
+  transform: translateX(3px);
+}
+.nav button:hover svg {
+  transform: scale(1.1);
+  stroke: var(--brand-accent);
+}
+
+.nav button.active {
+  background: linear-gradient(135deg, rgba(15, 81, 50, 0.55), rgba(46, 125, 82, 0.4));
+  color: #ffffff;
+  border: 1px solid rgba(74, 222, 128, 0.4);
+  box-shadow: 0 4px 16px rgba(15, 81, 50, 0.35);
+}
+.nav button.active svg {
+  stroke: var(--brand-accent);
+}
+
+/* Sidebar Astra Interactive HUD */
+.side-hud {
+  background: linear-gradient(145deg, #0d1913, #09120e);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  font-size: 11.5px;
+  color: var(--brand-sage);
+  position: relative;
+  overflow: hidden;
+}
+.side-hud::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #10b981, #2e7d52, transparent);
+}
+.hud-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+.live-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--brand-accent);
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.live-dot {
+  width: 6px;
+  height: 6px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: pulseDot 1.8s infinite;
+}
+@keyframes pulseDot {
+  0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1.2); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Main Content Region */
+.main {
+  margin-left: 270px;
+  width: calc(100% - 270px);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Topbar */
+.topbar {
+  height: 72px;
+  background: rgba(6, 10, 8, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--surface-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+  position: sticky;
+  top: 0;
+  z-index: 25;
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.topbar h2 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: #ffffff;
+}
+
+.hub-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand-mint);
+  background: rgba(15, 81, 50, 0.3);
+  border: 1px solid rgba(46, 125, 82, 0.4);
+  padding: 6px 14px;
+  border-radius: 99px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Interactive Astra Controls in Topbar */
+.astra-pill-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 81, 50, 0.25);
+  border: 1px solid rgba(46, 125, 82, 0.35);
+  border-radius: 99px;
+  padding: 5px 14px;
+  font-size: 11.5px;
+  color: var(--brand-sage);
+}
+.astra-pill-control input[type="range"] {
+  accent-color: var(--brand-accent);
+  width: 80px;
+  cursor: pointer;
+  height: 4px;
+}
+.btn-astra-toggle {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-astra-toggle:hover {
+  background: var(--brand-accent);
+  color: #060a08;
+}
+
+.admin-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.avatar-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0f5132, #2e7d52);
+  border: 1.5px solid rgba(167, 215, 181, 0.4);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.25);
+}
+
+.content {
+  padding: 32px 36px 60px;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.view { display: none; }
+.view.active { display: block; animation: fadeInView 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes fadeInView {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   FRONT OPENING INTERFACE (HERO SECTION)
+   ============================================================ */
+.hero-front {
+  position: relative;
+  background: linear-gradient(135deg, rgba(15, 81, 50, 0.5) 0%, rgba(9, 36, 23, 0.78) 50%, rgba(6, 18, 12, 0.96) 100%);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  border-radius: 26px;
+  padding: 42px 46px;
+  margin-bottom: 30px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(15, 81, 50, 0.2);
+}
+
+.hero-front::after {
+  content: "";
+  position: absolute;
+  top: -120px;
+  right: -80px;
+  width: 440px;
+  height: 440px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, rgba(15, 81, 50, 0.05) 50%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-glow-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(rgba(46, 125, 82, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46, 125, 82, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: 30px;
+  align-items: center;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(74, 222, 128, 0.4);
+  color: var(--brand-mint);
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.hero-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -1px;
+  color: #ffffff;
+  margin-bottom: 12px;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+}
+.hero-title span {
+  background: linear-gradient(120deg, #ffffff, #a7d7b5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-tagline {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--brand-sage);
+  margin-bottom: 10px;
+  line-height: 1.35;
+}
+
+.hero-desc {
+  font-size: 14.5px;
+  color: #c4d9ce;
+  max-width: 680px;
+  line-height: 1.6;
+  margin-bottom: 26px;
+}
+
+/* Hero Quick Actions Bar */
+.hero-actions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+}
+
+.btn-hero-primary {
+  background: linear-gradient(135deg, #10b981, #0f5132);
+  color: #ffffff;
+  border: 1px solid rgba(167, 215, 181, 0.5);
+  padding: 13px 24px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-hero-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(16, 185, 129, 0.55);
+  border-color: #ffffff;
+}
+
+.btn-hero-secondary {
+  background: rgba(13, 25, 18, 0.85);
+  color: var(--brand-mint);
+  border: 1px solid var(--surface-border);
+  padding: 13px 22px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-hero-secondary:hover {
+  background: rgba(46, 125, 82, 0.25);
+  border-color: var(--surface-border-hover);
+  color: #ffffff;
+}
+
+/* Quick Hub Select in Hero */
+.hero-quick-widget {
+  background: rgba(8, 15, 11, 0.8);
+  border: 1px solid rgba(46, 125, 82, 0.35);
+  backdrop-filter: blur(18px);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+}
+
+.quick-widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand-mint);
+}
+
+.hero-select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hero-input-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(19, 32, 26, 0.85);
+  border: 1px solid rgba(46, 125, 82, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+}
+.hero-input-field svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--brand-accent);
+  fill: none;
+  flex-shrink: 0;
+}
+.hero-input-field select, .hero-input-field input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  width: 100%;
+}
+.hero-input-field select option {
+  background: #0d1712;
+  color: #ffffff;
+}
+
+/* ============================================================
+   5 FEATURE CARDS (FROM UPLOADED REFERENCE IMAGE)
+   ============================================================ */
+.features-section {
+  margin-bottom: 34px;
+}
+.section-header-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: #ffffff;
+}
+.section-sub {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+.feature-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--surface-border);
+  backdrop-filter: blur(16px);
+  border-radius: var(--radius-md);
+  padding: 22px 16px;
+  text-align: center;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.feature-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(74, 222, 128, 0.45);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(16, 185, 129, 0.25);
+  background: rgba(19, 32, 26, 0.92);
+}
+.feature-card:hover::before {
+  background: linear-gradient(90deg, transparent, #10b981, transparent);
+}
+
+.feature-icon-box {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 14px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(15, 81, 50, 0.4), rgba(46, 125, 82, 0.2));
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  display: grid;
+  place-items: center;
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+.feature-card:hover .feature-icon-box {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.35), rgba(15, 81, 50, 0.55));
+}
+.feature-icon-box svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--brand-accent);
+  fill: none;
+  stroke-width: 2;
+}
+
+.feature-card h4 {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 5px;
+}
+.feature-card p {
+  font-size: 11px;
+  color: var(--brand-sage);
+  line-height: 1.4;
+}
+
+/* ============================================================
+   STATS & DASHBOARD GRIDS
+   ============================================================ */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat {
+  background: var(--glass-bg);
+  border: 1px solid var(--surface-border);
+  backdrop-filter: blur(16px);
+  border-radius: var(--radius-md);
+  padding: 20px 22px;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.stat:hover {
+  transform: translateY(-2px);
+  border-color: var(--surface-border-hover);
+}
+
+.stat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--brand-sage);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.stat-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  display: grid;
+  place-items: center;
+}
+.stat-icon-wrap svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--brand-accent);
+  fill: none;
+  stroke-width: 2;
+}
+
+.stat strong {
+  display: block;
+  font-size: 30px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: 10px;
+  letter-spacing: -0.5px;
+}
+.stat-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.stat-meta span { color: var(--brand-accent); font-weight: 600; }
+
+/* Grid 2 Layout */
+.grid2 {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 22px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background: var(--glass-bg);
+  border: 1px solid var(--surface-border);
+  backdrop-filter: blur(16px);
+  border-radius: var(--radius-lg);
+  padding: 26px;
+  box-shadow: var(--card-shadow);
+}
+.card h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+.card .sub {
+  font-size: 12px;
+  color: var(--brand-sage);
+  margin-bottom: 20px;
+}
+
+/* Action Grid */
+.action-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.action {
+  background: rgba(19, 32, 26, 0.65);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  padding: 22px 20px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+.action:hover {
+  background: rgba(28, 48, 38, 0.85);
+  border-color: rgba(74, 222, 128, 0.45);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4), 0 0 20px rgba(16, 185, 129, 0.2);
+}
+.action .act-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  display: grid;
+  place-items: center;
+  margin-bottom: 14px;
+}
+.action .act-icon-wrap svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--brand-accent);
+  fill: none;
+  stroke-width: 2;
+}
+.action b {
+  font-size: 15px;
+  color: #ffffff;
+  margin-bottom: 5px;
+  display: block;
+}
+.action span {
+  font-size: 12px;
+  color: var(--brand-sage);
+  line-height: 1.45;
+}
+
+/* Capacity Bars */
+.progress-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  margin: 16px 0 8px;
+  color: var(--brand-sage);
+}
+.progress-row b {
+  color: #ffffff;
+}
+.bar {
+  height: 9px;
+  background: #0d1813;
+  border: 1px solid rgba(46, 125, 82, 0.25);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0f5132, #10b981);
+  border-radius: 99px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fill.green {
+  background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+/* ============================================================
+   PARKING SLOT GRID & ELEMENTS
+   ============================================================ */
+.slot-legend-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.legend-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+.legend-dot.avail { background: #10b981; }
+.legend-dot.occ { background: #f43f5e; }
+.legend-dot.res { background: #f59e0b; }
+
+.parking-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 11px;
+}
+
+.slot {
+  background: rgba(13, 21, 17, 0.9);
+  border: 1px solid rgba(46, 125, 82, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 14px 8px;
+  text-align: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.slot small {
+  display: block;
+  margin-top: 4px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.slot.available {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.08);
+  color: #34d399;
+}
+.slot.available small { color: #6ee7b7; }
+.slot.available:hover {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
+  transform: translateY(-2px);
+}
+
+.slot.occupied {
+  border-color: rgba(244, 63, 94, 0.4);
+  background: rgba(244, 63, 94, 0.08);
+  color: #fb7185;
+}
+.slot.occupied small { color: #fda4af; }
+.slot.occupied:hover {
+  border-color: #f43f5e;
+  box-shadow: 0 0 16px rgba(244, 63, 94, 0.25);
+}
+
+.slot.reserved {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+  transform: scale(1.03);
+}
+.slot.reserved small { color: #fde68a; }
+
+/* ============================================================
+   VEHICLE ENTRY & EXIT WIZARD FORMS
+   ============================================================ */
+.form-wrap {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.btn-back-link {
+  background: transparent;
+  color: var(--brand-sage);
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  transition: color 0.2s ease;
+}
+.btn-back-link:hover {
+  color: #ffffff;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+.step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+.circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #0d1913;
+  border: 1px solid var(--surface-border);
+  color: var(--brand-sage);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  transition: all 0.25s ease;
+}
+.step.on {
+  color: #ffffff;
+}
+.step.on .circle {
+  background: linear-gradient(135deg, #10b981, #0f5132);
+  border-color: #34d399;
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
+}
+.step-line {
+  height: 2px;
+  width: 80px;
+  background: rgba(46, 125, 82, 0.25);
+  margin: 0 14px;
+}
+
+.form-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--surface-border);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius-lg);
+  padding: 34px;
+  box-shadow: var(--card-shadow);
+}
+.form-card h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+.form-card > p {
+  color: var(--brand-sage);
+  font-size: 13.5px;
+  margin-bottom: 26px;
+}
+
+.form-step { display: none; }
+.form-step.active { display: block; animation: fadeInView 0.25s ease; }
+
+/* Vehicle Type Grid */
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.type-card {
+  border: 1.5px solid var(--surface-border);
+  background: rgba(19, 32, 26, 0.6);
+  border-radius: var(--radius-md);
+  padding: 26px 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.type-card:hover {
+  border-color: rgba(74, 222, 128, 0.4);
+  background: rgba(28, 48, 38, 0.8);
+  transform: translateY(-2px);
+}
+.type-card.selected {
+  border-color: #10b981;
+  background: linear-gradient(135deg, rgba(15, 81, 50, 0.5), rgba(46, 125, 82, 0.35));
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+}
+.type-card .ico {
+  font-size: 38px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
+}
+.type-card b {
+  display: block;
+  font-size: 15px;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+.type-card span {
+  font-size: 12px;
+  color: var(--brand-sage);
+}
+
+/* Fields */
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.field.full {
+  grid-column: 1 / -1;
+}
+.field label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand-mint);
+  letter-spacing: 0.2px;
+}
+.field input, .field select {
+  border: 1px solid var(--surface-border);
+  background: rgba(19, 32, 26, 0.85);
+  border-radius: var(--radius-sm);
+  padding: 13px 15px;
+  outline: none;
+  color: #ffffff;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+.field input:focus, .field select:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  background: rgba(28, 48, 38, 0.95);
+}
+
+/* Rates Box */
+.price-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 22px 0;
+}
+.price {
+  background: rgba(19, 32, 26, 0.6);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+}
+.price span {
+  font-size: 12px;
+  color: var(--brand-sage);
+}
+.price b {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 24px;
+  color: #ffffff;
+  display: block;
+  margin-top: 4px;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.btn {
+  padding: 12px 22px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn.primary {
+  background: linear-gradient(135deg, #10b981, #0f5132);
+  color: #ffffff;
+  border: 1px solid rgba(167, 215, 181, 0.4);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+}
+.btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.5);
+}
+.btn.secondary {
+  background: rgba(19, 32, 26, 0.7);
+  color: var(--brand-mint);
+  border: 1px solid var(--surface-border);
+}
+.btn.secondary:hover {
+  background: rgba(28, 48, 38, 0.9);
+  color: #ffffff;
+}
+
+/* Ticket Summary */
+.ticket {
+  border: 1px dashed rgba(74, 222, 128, 0.35);
+  background: rgba(15, 30, 22, 0.7);
+  border-radius: var(--radius-md);
+  padding: 22px;
+  margin-bottom: 20px;
+}
+.ticket-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(46, 125, 82, 0.18);
+  font-size: 13.5px;
+  color: var(--brand-sage);
+}
+.ticket-row:last-child {
+  border-bottom: none;
+}
+.ticket-row strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Payment Mode Grid */
+.payment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.pay {
+  border: 1.5px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  text-align: center;
+  background: rgba(19, 32, 26, 0.6);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.pay:hover {
+  border-color: rgba(74, 222, 128, 0.4);
+  background: rgba(28, 48, 38, 0.8);
+}
+.pay.selected {
+  border-color: #10b981;
+  background: linear-gradient(135deg, rgba(15, 81, 50, 0.45), rgba(46, 125, 82, 0.35));
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+}
+.pay .ico {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+.pay b {
+  font-size: 14px;
+  color: #ffffff;
+}
+
+/* Success View */
+.success {
+  text-align: center;
+  padding: 30px;
+}
+.success .check {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.18);
+  border: 2px solid #10b981;
+  color: #10b981;
+  font-size: 36px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+  box-shadow: 0 0 24px rgba(16, 185, 129, 0.4);
+}
+.receipt {
+  margin: 24px auto;
+  max-width: 480px;
+  text-align: left;
+}
+
+/* Table */
+.table-wrap {
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+.table th {
+  text-align: left;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--surface-border);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--brand-sage);
+}
+.table td {
+  padding: 15px 16px;
+  border-bottom: 1px solid rgba(46, 125, 82, 0.12);
+  color: #ffffff;
+}
+.badge {
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.badge.green {
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+.badge.red {
+  background: rgba(244, 63, 94, 0.18);
+  color: #fb7185;
+  border: 1px solid rgba(244, 63, 94, 0.35);
+}
+
+.search {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.search input {
+  flex: 1;
+  background: rgba(19, 32, 26, 0.85);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  color: #ffffff;
+  outline: none;
+}
+.search input:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 36px;
+  font-size: 13px;
+}
+
+/* Modal Popup */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-card {
+  background: #0d1712;
+  border: 1px solid rgba(74, 222, 128, 0.4);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(16, 185, 129, 0.25);
+  transform: scale(0.95);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-overlay.open .modal-card {
+  transform: scale(1);
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  background: #0f241a;
+  border: 1px solid #10b981;
+  color: #ffffff;
+  padding: 14px 20px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(16, 185, 129, 0.3);
+  font-size: 13.5px;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 999;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Quick Fill Demo Buttons */
+.demo-pill {
+  font-size: 11px;
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--brand-accent);
+  border: 1px dashed rgba(16, 185, 129, 0.4);
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.demo-pill:hover {
+  background: rgba(16, 185, 129, 0.28);
+  color: #ffffff;
+}
+
+/* Owner PIN Security Lock Gate */
+.owner-lock-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: radial-gradient(circle at 50% 35%, rgba(15, 81, 50, 0.45) 0%, rgba(5, 8, 6, 0.98) 75%);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.owner-lock-overlay.unlocked {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.owner-lock-card {
+  background: #0d1711;
+  border: 1px solid rgba(46, 125, 82, 0.45);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 50px rgba(16, 185, 129, 0.2);
+  border-radius: 24px;
+  padding: 36px 30px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.owner-lock-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, #10b981, #34d399, transparent);
+}
+.lock-icon-shield {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  box-shadow: 0 0 24px rgba(16, 185, 129, 0.3);
+}
+.lock-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px; font-weight: 800; color: #fff;
+  margin-bottom: 4px;
+}
+.lock-brand span { color: var(--brand-accent); }
+.owner-lock-card h2 {
+  font-size: 20px; font-weight: 800; color: #ffffff;
+  margin-bottom: 6px;
+}
+.lock-sub {
+  font-size: 12.5px; color: var(--brand-sage);
+  line-height: 1.5; margin-bottom: 20px;
+}
+.pin-display-group {
+  margin-bottom: 16px;
+}
+#ownerPinInput {
+  background: #122018;
+  border: 2px solid rgba(46, 125, 82, 0.4);
+  border-radius: 14px;
+  color: #34d399;
+  font-size: 28px;
+  letter-spacing: 12px;
+  text-align: center;
+  padding: 10px 14px;
+  width: 170px;
+  outline: none;
+  font-family: monospace;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) inset;
+  transition: all 0.2s;
+}
+#ownerPinInput:focus {
+  border-color: var(--brand-accent);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+}
+.pin-error {
+  font-size: 11.5px; color: #fb7185;
+  margin-top: 8px; font-weight: 600;
+}
+.pin-error.hidden { display: none; }
+.pin-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 250px;
+  margin: 0 auto 20px;
+}
+.pin-key {
+  background: rgba(18, 32, 24, 0.8);
+  border: 1px solid rgba(46, 125, 82, 0.3);
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 12px 0;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.pin-key:hover {
+  background: rgba(46, 125, 82, 0.35);
+  border-color: var(--brand-accent);
+  transform: translateY(-2px);
+}
+.pin-key.action {
+  font-size: 14px;
+  color: var(--brand-sage);
+}
+.btn-unlock-owner {
+  background: linear-gradient(135deg, var(--brand-accent), var(--brand-deep));
+  color: #ffffff;
+  border: 1px solid rgba(167, 215, 181, 0.4);
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  max-width: 250px;
+  margin: 0 auto;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s;
+}
+.btn-unlock-owner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(16, 185, 129, 0.55);
+}
+.lock-footer {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(46, 125, 82, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+.btn-demo-pin {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px dashed rgba(16, 185, 129, 0.5);
+  color: #34d399;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-demo-pin:hover {
+  background: var(--brand-accent);
+  color: #050806;
+}
+.btn-back-home-lock {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.btn-back-home-lock:hover { color: #ffffff; }
+
+.btn-lock-toggle {
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  color: #fb7185;
+  padding: 7px 14px;
+  border-radius: 99px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.btn-lock-toggle:hover {
+  background: rgba(244, 63, 94, 0.25);
+  color: #ffffff;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 1100px) {
+  .features-grid { grid-template-columns: repeat(3, 1fr); }
+  .parking-grid { grid-template-columns: repeat(5, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .sidebar { width: 78px; padding: 18px 10px; }
+  .brand-text, .nav button span, .nav-label, .side-hud, .topbar-left .hub-status-badge { display: none; }
+  .brand-container { justify-content: center; padding-bottom: 16px; }
+  .nav button { justify-content: center; padding: 14px; }
+  .main { margin-left: 78px; width: calc(100% - 78px); }
+  .hero-inner { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: 1fr 1fr; }
+  .grid2 { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .parking-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .content { padding: 18px; }
+  .topbar { padding: 0 18px; }
+  .hero-front { padding: 26px 20px; }
+  .hero-title { font-size: 27px; }
+  .hero-tagline { font-size: 16px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: 1fr; }
+  .action-grid, .type-grid, .fields, .payment-grid, .price-box { grid-template-columns: 1fr; }
+  .parking-grid { grid-template-columns: repeat(3, 1fr); }
+  .step-line { width: 30px; }
+  .step { font-size: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- OWNER SECURITY PIN LOCK GATE -->
+<div id="ownerLockGate" class="owner-lock-overlay">
+  <div class="owner-lock-card">
+    <div class="lock-icon-shield">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+    <div class="lock-brand">Park<span>Wise</span></div>
+    <h2>Owner & Admin Access</h2>
+    <p class="lock-sub">This console is restricted to the parking facility owner. Enter your 4-digit security PIN to view revenues, operations, and audit records.</p>
+
+    <div class="pin-display-group">
+      <input type="password" id="ownerPinInput" maxlength="4" placeholder="••••" autocomplete="off" onkeydown="handlePinKey(event)">
+      <div id="pinErrorMessage" class="pin-error hidden">Invalid Security PIN. Try default: 1234</div>
+    </div>
+
+    <!-- Numeric Keypad -->
+    <div class="pin-keypad">
+      <button type="button" class="pin-key" onclick="pressPinDigit('1')">1</button>
+      <button type="button" class="pin-key" onclick="pressPinDigit('2')">2</button>
+      <button type="button" class="pin-key" onclick="pressPinDigit('3')">3</button>
+      <button type="button" class="pin-key" onclick="pressPinDigit('4')">4</button>
+      <button type="button" class="pin-key" onclick="pressPinDigit('5')">5</button>
+      <button type="button" class="pin-key" onclick="pressPinDigit('6')">6</button>
+      <button type="button" class="pin-key" onclick="pressPinDigit('7')">7</button>
+      <button type="button" class="pin-key" onclick="pressPinDigit('8')">8</button>
+      <button type="button" class="pin-key" onclick="pressPinDigit('9')">9</button>
+      <button type="button" class="pin-key action" onclick="clearPin()">C</button>
+      <button type="button" class="pin-key" onclick="pressPinDigit('0')">0</button>
+      <button type="button" class="pin-key action" onclick="backspacePin()">⌫</button>
+    </div>
+
+    <button type="button" class="btn-unlock-owner" onclick="unlockOwnerConsole()">
+      Unlock Console →
+    </button>
+
+    <div class="lock-footer">
+      <button type="button" class="btn-demo-pin" onclick="quickUnlockDemo()">
+        ⚡ Demo PIN: 1234
+      </button>
+      <a href="website.html" class="btn-back-home-lock">
+        ← Back to User Homepage
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Canvas for GPT-6 Astra Scroll-Combining Background -->
+<canvas id="astraCanvas"></canvas>
+<div class="ambient-glow"></div>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="brand-container" onclick="showView('dashboard');">
+    <!-- Exact ParkWise Logo in SVG: Dark emerald badge with 'P' made of roadway with dashed divider & location pin -->
+    <svg class="brand-logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" rx="28" fill="url(#pwGrad)"/>
+      <rect x="1" y="1" width="98" height="98" rx="27" stroke="rgba(167, 215, 181, 0.4)" stroke-width="2"/>
+      <path d="M24 82 C24 82, 38 68, 38 42 C38 28, 48 22, 62 22 C76 22, 82 30, 82 42 C82 54, 73 61, 58 61 L36 61" 
+            stroke="#ffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M22 84 C26 76, 36 64, 38 42 C40 28, 50 24, 62 24 C74 24, 80 31, 80 42 C80 52, 72 59, 58 59 L38 59" 
+            stroke="#0F5132" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M27 82 C31 72, 37 56, 38 42" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="4 4" stroke-linecap="round"/>
+      <path d="M62 33 C58.5 33, 56 35.8, 56 39.2 C56 43.8, 62 49, 62 49 C62 49, 68 43.8, 68 39.2 C68 35.8, 65.5 33, 62 33 Z" fill="#10b981"/>
+      <circle cx="62" cy="38.5" r="2.2" fill="#0d1712"/>
+      <defs>
+        <linearGradient id="pwGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#0F5132"/>
+          <stop offset="1" stop-color="#072215"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="brand-text">
+      <h1>Park<span>Wise</span></h1>
+      <p>Smart Parking. Smoother Journeys.</p>
+    </div>
+  </div>
+
+  <div class="nav-label">Navigation</div>
+  <a href="website.html" style="text-decoration: none; color: #34d399; background: rgba(16, 185, 129, 0.14); border: 1px solid rgba(16, 185, 129, 0.35); padding: 11px 16px; border-radius: var(--radius-sm); display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 13px; margin-bottom: 8px; transition: all 0.2s;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>← Back to Homepage</span>
+  </a>
+  <nav class="nav">
+    <button class="active" data-view="dashboard">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>
+      <span>Dashboard</span>
+    </button>
+    <button data-view="entry">
+      <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <span>Vehicle Entry</span>
+    </button>
+    <button data-view="exit">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      <span>Vehicle Exit</span>
+    </button>
+    <button data-view="parking">
+      <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 16V8h4a2 2 0 0 1 0 4H9"/></svg>
+      <span>Parking Slots</span>
+    </button>
+    <button data-view="history">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+      <span>Transactions</span>
+    </button>
+  </nav>
+
+  <!-- Sidebar HUD -->
+  <div class="side-hud">
+    <div class="hud-title">
+      <span>Astra Background</span>
+      <span class="live-pill"><span class="live-dot"></span> Active</span>
+    </div>
+    <p style="margin-bottom: 8px;">Logo elements combine as you scroll up and down.</p>
+    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-bottom: 6px;">
+      <span>Assembly Sync</span>
+      <span id="sideAssemblyVal">0%</span>
+    </div>
+    <button class="btn-astra-toggle" style="width: 100%;" onclick="toggleAutoAstra()">⚡ Auto-Combine Logo</button>
+  </div>
+</aside>
+
+<!-- MAIN APP REGION -->
+<main class="main">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="website.html" style="text-decoration: none; color: var(--brand-mint); background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(74, 222, 128, 0.35); padding: 7px 16px; border-radius: 99px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to Homepage
+      </a>
+      <h2 id="pageTitle">Dashboard</h2>
+      <div class="hub-status-badge">
+        <span class="live-dot"></span> <span id="topHubLabel">Central Plaza Hub: Online</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <!-- Manual Astra Scrubber in Topbar -->
+      <div class="astra-pill-control" title="Manually scrub or scroll to combine logo">
+        <span>Astra Combine:</span>
+        <input type="range" id="astraScrubber" min="0" max="1" step="0.01" value="0">
+        <button class="btn-astra-toggle" onclick="toggleAutoAstra()" id="autoAstraBtn">Auto</button>
+      </div>
+      <div class="admin-profile">
+        <button class="btn-lock-toggle" onclick="lockOwnerConsole()" title="Lock Admin Console">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Lock Console
+        </button>
+        <div class="avatar-badge">PW</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- ============================================================
+         DASHBOARD & FRONT OPENING INTERFACE
+         ============================================================ -->
+    <section id="dashboard" class="view active">
+      
+      <!-- FRONT OPENING HERO INTERFACE -->
+      <div class="hero-front">
+        <div class="hero-glow-grid"></div>
+        <div class="hero-inner">
+          <div>
+            <div class="hero-badge">
+              <span class="live-dot"></span> Owner & Operations Management Console
+            </div>
+            <h1 class="hero-title">Owner Console 🔒<br><span>Live Parking Telemetry</span></h1>
+            <p class="hero-tagline">Real-time bay occupancy, barrier control, and automated fee reconciliation.</p>
+            <p class="hero-desc">
+              Monitor active parked vehicles, process exits, track total revenue settlements, and inspect ultrasonic sensor telemetry.
+            </p>
+            <div class="hero-actions-bar">
+              <button class="btn-hero-primary" onclick="startEntry()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                Register Vehicle Entry
+              </button>
+              <button class="btn-hero-secondary" onclick="startExit()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Process Exit & Payment
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Hub Reservation Box -->
+          <div class="hero-quick-widget">
+            <div class="quick-widget-header">
+              <span>Quick Slot Lookup</span>
+              <span style="font-size: 11px; color: var(--brand-accent);">Live Sync</span>
+            </div>
+            <div class="hero-select-group">
+              <div class="hero-input-field">
+                <svg viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"/><circle cx="12" cy="10" r="3"/></svg>
+                <select id="hubSelect" onchange="changeHub(this.value)">
+                  <option value="Central Plaza Hub">Central Plaza Multi-Level</option>
+                  <option value="Metro Station North">Metro Station North Bay</option>
+                  <option value="Cyber City Tower 3">Cyber City Tower 3</option>
+                  <option value="Airport Terminal 2">Airport Terminal 2 VIP</option>
+                </select>
+              </div>
+              <div class="hero-input-field">
+                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
+                <select id="quickVehicleType" onchange="syncQuickType(this.value)">
+                  <option value="Car">Car (Hatchback / Sedan / SUV)</option>
+                  <option value="Two-Wheeler">Two-Wheeler (Bike / Scooter)</option>
+                  <option value="Heavy Vehicle">Heavy Vehicle (Bus / Truck)</option>
+                </select>
+              </div>
+              <button class="btn primary" style="width: 100%; justify-content: center; margin-top: 4px;" onclick="startEntryWithHub()">
+                Assign Slot at Location →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-top">Total Slots <div class="stat-icon-wrap"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></div></div>
+          <strong id="totalSlots">30</strong>
+          <div class="stat-meta">Capacity: <span>Multi-Level</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-top">Occupied <div class="stat-icon-wrap"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="8" rx="2"/><path d="M5 11l2-5h10l2 5"/><circle cx="7.5" cy="15.5" r="1.5"/><circle cx="16.5" cy="15.5" r="1.5"/></svg></div></div>
+          <strong id="occupiedSlots" style="color: #fb7185;">12</strong>
+          <div class="stat-meta">Active vehicles in bays</div>
+        </div>
+        <div class="stat">
+          <div class="stat-top">Available <div class="stat-icon-wrap"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div></div>
+          <strong id="availableSlots" style="color: #34d399;">18</strong>
+          <div class="stat-meta">Ready for instant entry</div>
+        </div>
+        <div class="stat">
+          <div class="stat-top">Total Revenue <div class="stat-icon-wrap"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div></div>
+          <strong id="revenue" style="color: #34d399;">₹4,900</strong>
+          <div class="stat-meta">Settled: <span>UPI / Card / Cash</span></div>
+        </div>
+      </div>
+
+      <!-- GRID 2 -->
+      <div class="grid2">
+        <!-- Quick Actions Card -->
+        <div class="card">
+          <h3>Quick Parking Operations</h3>
+          <div class="sub">Register incoming drivers or process exiting tickets</div>
+          <div class="action-grid">
+            <button class="action" onclick="startEntry()">
+              <div class="act-icon-wrap">
+                <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </div>
+              <b>Register Vehicle Entry</b>
+              <span>Assign an automated parking bay & generate digital ticket.</span>
+            </button>
+            <button class="action" onclick="startExit()">
+              <div class="act-icon-wrap">
+                <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              </div>
+              <b>Process Vehicle Exit</b>
+              <span>Retrieve ticket, calculate hourly fee & accept payment.</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Capacity Utilization Card -->
+        <div class="card">
+          <h3>Live Bay Utilization</h3>
+          <div class="sub">Telemetry from ultrasonic ground sensors</div>
+          <div class="progress-row"><span>Occupied Slots</span><b id="capacityText">40%</b></div>
+          <div class="bar"><div class="fill" id="capacityFill" style="width:40%"></div></div>
+          <div class="progress-row"><span>Available Slots</span><b id="availableText">60%</b></div>
+          <div class="bar"><div class="fill green" id="availableFill" style="width:60%"></div></div>
+        </div>
+      </div>
+
+      <!-- Live Mini Slot Overview -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div>
+            <h3>Live Parking Bay Status</h3>
+            <div class="sub" style="margin-bottom: 0;">Green = Available · Red = Occupied · Amber = Selected (Click any slot to interact)</div>
+          </div>
+          <button class="btn secondary" style="padding: 6px 14px; font-size: 12px;" onclick="showView('parking')">View Full Floor Plan →</button>
+        </div>
+        <div class="slot-legend-bar" style="margin-top: 14px;">
+          <div class="legend-pill"><div class="legend-dot avail"></div> Available</div>
+          <div class="legend-pill"><div class="legend-dot occ"></div> Occupied</div>
+          <div class="legend-pill"><div class="legend-dot res"></div> Reserved / Selected</div>
+        </div>
+        <div class="parking-grid" id="miniSlots"></div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================
+         VEHICLE ENTRY VIEW (3-STEP WIZARD)
+         ============================================================ -->
+    <section id="entry" class="view">
+      <div class="form-wrap">
+        <button class="btn-back-link" onclick="showView('dashboard')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back to Dashboard
+        </button>
+
+        <div class="stepper">
+          <div class="step on" id="s1"><div class="circle">1</div> Vehicle Category</div>
+          <div class="step-line"></div>
+          <div class="step" id="s2"><div class="circle">2</div> Driver Details</div>
+          <div class="step-line"></div>
+          <div class="step" id="s3"><div class="circle">3</div> Slot Assignment</div>
+        </div>
+
+        <div class="form-card">
+          <!-- Step 1: Vehicle Category -->
+          <div class="form-step active" id="entry1">
+            <h2>Select Vehicle Category</h2>
+            <p>Choose the category of the vehicle entering the parking facility.</p>
+            <div class="type-grid">
+              <button class="type-card" data-type="Two-Wheeler">
+                <div class="ico">🏍️</div>
+                <b>Two-Wheeler</b>
+                <span>Motorcycle / Scooter</span>
+              </button>
+              <button class="type-card" data-type="Car">
+                <div class="ico">🚗</div>
+                <b>Car</b>
+                <span>Hatchback / Sedan / SUV</span>
+              </button>
+              <button class="type-card" data-type="Heavy Vehicle">
+                <div class="ico">🚛</div>
+                <b>Heavy Vehicle</b>
+                <span>Bus / Delivery Truck</span>
+              </button>
+            </div>
+            <div class="actions">
+              <button class="btn primary" onclick="entryNext1()">Continue to Details →</button>
+            </div>
+          </div>
+
+          <!-- Step 2: Driver & Vehicle Details -->
+          <div class="form-step" id="entry2">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+              <h2>Vehicle & Owner Information</h2>
+              <span class="demo-pill" onclick="quickFillEntryDemo()">⚡ Quick-Fill Demo Data</span>
+            </div>
+            <p>Enter the details required to generate the digital parking pass.</p>
+            <div class="fields">
+              <div class="field">
+                <label>Driver / Owner Name *</label>
+                <input id="owner" placeholder="e.g. Rahul Sharma">
+              </div>
+              <div class="field">
+                <label>Email Address *</label>
+                <input id="email" type="email" placeholder="e.g. rahul.sharma@example.com">
+              </div>
+              <div class="field">
+                <label>Vehicle License Plate *</label>
+                <input id="vehicle" placeholder="KL 07 AB 1234" style="text-transform: uppercase;">
+              </div>
+              <div class="field">
+                <label>Contact Mobile Number *</label>
+                <input id="phone" type="tel" placeholder="10-digit mobile number">
+              </div>
+              <div class="field full">
+                <label>Vehicle Model / Make</label>
+                <input id="model" placeholder="e.g. Hyundai Creta">
+              </div>
+            </div>
+
+            <div class="price-box">
+              <div class="price">
+                <span>First Hour Rate</span>
+                <b id="firstRate">₹150</b>
+              </div>
+              <div class="price">
+                <span>Each Additional Hour</span>
+                <b id="extraRate">₹100</b>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn secondary" onclick="entryBack1()">← Back</button>
+              <button class="btn primary" onclick="entryNext2()">Choose Parking Slot →</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Slot Assignment -->
+          <div class="form-step" id="entry3">
+            <h2>Assign Parking Slot</h2>
+            <p>Click on any available green slot below to select it for this vehicle.</p>
+            <div class="ticket">
+              <div class="ticket-row"><span>Vehicle Number</span><strong id="ticketVehicle">—</strong></div>
+              <div class="ticket-row"><span>Category</span><strong id="ticketType">—</strong></div>
+              <div class="ticket-row"><span>Selected Bay</span><strong id="ticketSelectedSlot" style="color: #f59e0b;">None Selected</strong></div>
+              <div class="ticket-row"><span>Base Hourly Rate</span><strong id="ticketRate">—</strong></div>
+            </div>
+            <div class="parking-grid" id="entrySlots" style="margin-bottom: 20px;"></div>
+            <div class="actions">
+              <button class="btn secondary" onclick="entryBack2()">← Back</button>
+              <button class="btn primary" onclick="confirmEntry()">Confirm & Issue Ticket</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         VEHICLE EXIT VIEW
+         ============================================================ -->
+    <section id="exit" class="view">
+      <div class="form-wrap">
+        <button class="btn-back-link" onclick="showView('dashboard')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back to Dashboard
+        </button>
+
+        <div class="form-card">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+            <h2>Vehicle Exit & Settlement</h2>
+            <span class="demo-pill" onclick="quickFillExitDemo()">⚡ Pick Active Parked Car</span>
+          </div>
+          <p>Search by vehicle license number or parking bay to retrieve the active ticket.</p>
+          <div class="fields">
+            <div class="field">
+              <label>Vehicle License Plate</label>
+              <input id="exitVehicle" placeholder="KL 07 AB 1234" style="text-transform: uppercase;">
+            </div>
+            <div class="field">
+              <label>Parking Slot Number</label>
+              <input id="exitSlot" placeholder="A-01" style="text-transform: uppercase;">
+            </div>
+          </div>
+          <div class="actions" style="margin-top: 14px;">
+            <button class="btn primary" onclick="findVehicle()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              Search Ticket
+            </button>
+          </div>
+
+          <div id="exitResult" style="margin-top: 26px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         PAYMENT VIEW
+         ============================================================ -->
+    <section id="payment" class="view">
+      <div class="form-wrap">
+        <button class="btn-back-link" onclick="showView('exit')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back to Vehicle Exit
+        </button>
+
+        <div class="form-card">
+          <h2>Digital Payment & Gate Clearance</h2>
+          <p>Review the computed parking charges and select a payment method.</p>
+          <div class="ticket">
+            <div class="ticket-row"><span>Vehicle Number</span><strong id="payVehicle">—</strong></div>
+            <div class="ticket-row"><span>Parking Bay</span><strong id="paySlot">—</strong></div>
+            <div class="ticket-row"><span>Parked Duration</span><strong id="payDuration">—</strong></div>
+            <div class="ticket-row"><span>Calculated Fee</span><strong id="payFee">—</strong></div>
+            <div class="ticket-row"><span>Total Payable Amount</span><strong id="payTotal" style="font-size: 22px; color: #34d399;">—</strong></div>
+          </div>
+
+          <h3 style="margin: 24px 0 14px; font-size: 16px; color: #ffffff;">Select Payment Gateway</h3>
+          <div class="payment-grid">
+            <button class="pay" data-pay="UPI">
+              <div class="ico">📱</div>
+              <b>Instant UPI</b>
+              <div style="font-size: 11px; color: var(--brand-sage); margin-top: 4px;">GPay / PhonePe / Paytm</div>
+            </button>
+            <button class="pay" data-pay="Card">
+              <div class="ico">💳</div>
+              <b>Credit / Debit Card</b>
+              <div style="font-size: 11px; color: var(--brand-sage); margin-top: 4px;">Tap & Pay / Chip</div>
+            </button>
+            <button class="pay" data-pay="Cash">
+              <div class="ico">💵</div>
+              <b>Cash at Gate</b>
+              <div style="font-size: 11px; color: var(--brand-sage); margin-top: 4px;">Physical Attendant</div>
+            </button>
+          </div>
+
+          <div class="actions">
+            <button class="btn primary" onclick="completePayment()">Pay & Open Exit Barrier →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SUCCESS RECEIPT VIEW
+         ============================================================ -->
+    <section id="success" class="view">
+      <div class="form-wrap">
+        <div class="form-card success">
+          <div class="check">✓</div>
+          <h2 style="font-size: 26px;">Payment Successful!</h2>
+          <p>The vehicle exit has been logged and the exit boom barrier is now open.</p>
+          <div class="receipt ticket" id="receipt"></div>
+          <div class="actions" style="justify-content: center; gap: 16px;">
+            <button class="btn secondary" onclick="printBill()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              Print Receipt
+            </button>
+            <button class="btn primary" onclick="showView('dashboard')">Return to Dashboard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         PARKING SLOTS FULL FLOOR PLAN
+         ============================================================ -->
+    <section id="parking" class="view">
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h2>Interactive Parking Floor Plan</h2>
+            <div class="sub" style="margin-bottom: 0;">Multi-Level Floor Bay Visualizer (Sensors Connected · Click any slot to view or manage)</div>
+          </div>
+          <div class="slot-legend-bar" style="margin-bottom: 0;">
+            <div class="legend-pill"><div class="legend-dot avail"></div> Available</div>
+            <div class="legend-pill"><div class="legend-dot occ"></div> Occupied</div>
+            <div class="legend-pill"><div class="legend-dot res"></div> Selected</div>
+          </div>
+        </div>
+        <div class="parking-grid" id="allSlots" style="margin-top: 18px;"></div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         TRANSACTION HISTORY VIEW
+         ============================================================ -->
+    <section id="history" class="view">
+      <div class="card">
+        <h2>Live Transaction Audit Log</h2>
+        <div class="sub">Completed entries, durations, and fee settlements</div>
+        <div class="search">
+          <input id="historySearch" placeholder="Search by vehicle number or slot..." oninput="renderHistory()">
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Vehicle</th>
+                <th>Category</th>
+                <th>Bay</th>
+                <th>Entry Time</th>
+                <th>Exit Time</th>
+                <th>Fee Paid</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+</main>
+</div><!-- /app -->
+
+<!-- INTERACTIVE SLOT MODAL -->
+<div class="modal-overlay" id="slotModal">
+  <div class="modal-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h3 id="modalSlotTitle" style="font-size: 19px; color: #ffffff;">Slot Details</h3>
+      <button onclick="closeSlotModal()" style="background: none; border: none; color: var(--text-muted); font-size: 22px; cursor: pointer;">&times;</button>
+    </div>
+    <div id="modalSlotBody"></div>
+    <div class="actions" style="margin-top: 20px;">
+      <button class="btn secondary" onclick="closeSlotModal()">Close</button>
+      <div id="modalSlotActions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURE MODAL -->
+<div class="modal-overlay" id="featureModal">
+  <div class="modal-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h3 id="featModalTitle" style="font-size: 19px; color: #ffffff;">Feature Highlight</h3>
+      <button onclick="closeFeatModal()" style="background: none; border: none; color: var(--text-muted); font-size: 22px; cursor: pointer;">&times;</button>
+    </div>
+    <div id="featModalBody" style="font-size: 14px; color: var(--brand-sage); line-height: 1.6;"></div>
+    <div class="actions" style="margin-top: 22px;">
+      <button class="btn primary" onclick="closeFeatModal()">Got It</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ============================================================
+     APPLICATION LOGIC & ASTRA CANVAS LOGO ASSEMBLY ENGINE
+     ============================================================ -->
+<script>
+/* ============================================================
+   1. GPT-6 ASTRA CANVAS LOGO COMBINING ENGINE
+   ============================================================ */
+const canvas = document.getElementById('astraCanvas');
+const ctx = canvas.getContext('2d');
+let width = (canvas.width = window.innerWidth);
+let height = (canvas.height = window.innerHeight);
+
+window.addEventListener('resize', () => {
+  width = canvas.width = window.innerWidth;
+  height = canvas.height = window.innerHeight;
+  initAstraPoints();
+});
+
+// Scroll progress tracker (0 to 1)
+let targetScrollProgress = 0;
+let currentScrollProgress = 0;
+let manualScrub = false;
+let autoAstraAnim = false;
+let autoAstraDir = 1;
+
+window.addEventListener('scroll', () => {
+  if (!manualScrub && !autoAstraAnim) {
+    const scrollY = window.scrollY;
+    // Map scroll so logo combines together as user scrolls up/down
+    targetScrollProgress = Math.min(1, Math.max(0, scrollY / (window.innerHeight * 0.75)));
+    document.getElementById('astraScrubber').value = targetScrollProgress;
+    updateAssemblyHud(targetScrollProgress);
+  }
+});
+
+document.getElementById('astraScrubber').addEventListener('input', (e) => {
+  manualScrub = true;
+  autoAstraAnim = false;
+  targetScrollProgress = parseFloat(e.target.value);
+  updateAssemblyHud(targetScrollProgress);
+});
+
+function toggleAutoAstra() {
+  autoAstraAnim = !autoAstraAnim;
+  const btn = document.getElementById('autoAstraBtn');
+  if (btn) btn.textContent = autoAstraAnim ? 'Stop' : 'Auto';
+  toast(autoAstraAnim ? "Astra Auto-Combine Started!" : "Astra Auto-Combine Stopped.");
+}
+
+function updateAssemblyHud(val) {
+  const pct = Math.round(val * 100) + '%';
+  const el = document.getElementById('sideAssemblyVal');
+  if (el) el.textContent = pct;
+}
+
+// Mouse interaction
+let mouse = { x: width / 2, y: height / 2, active: false };
+window.addEventListener('mousemove', (e) => {
+  mouse.x = e.clientX;
+  mouse.y = e.clientY;
+  mouse.active = true;
+});
+window.addEventListener('mouseleave', () => {
+  mouse.active = false;
+});
+
+// Vector point generator for the ParkWise Logo:
+// Outer Squircle, 'P' road shape, dashed road divider, and location pin
+const TOTAL_PARTICLES = 360;
+let particles = [];
+
+function generateLogoTargetPoints() {
+  const pts = [];
+  const cx = width / 2;
+  const cy = height / 2;
+  const scale = Math.min(width, height) * 0.38; // Logo size
+
+  // 1. Squircle Points (Outer Rounded Box) ~ 120 pts
+  const squircleCount = 120;
+  const r = scale * 0.5;
+  for (let i = 0; i < squircleCount; i++) {
+    const t = (i / squircleCount) * Math.PI * 2;
+    const cosT = Math.cos(t);
+    const sinT = Math.sin(t);
+    const signX = Math.sign(cosT);
+    const signY = Math.sign(sinT);
+    const px = cx + signX * Math.pow(Math.abs(cosT), 0.5) * r;
+    const py = cy + signY * Math.pow(Math.abs(sinT), 0.5) * r;
+    pts.push({ x: px, y: py, type: 'border', color: '#10b981' });
+  }
+
+  // 2. 'P' Roadway Contour (Roadway stem flaring at bottom & upper loop) ~ 150 pts
+  const roadCount = 150;
+  for (let i = 0; i < roadCount; i++) {
+    const u = i / roadCount;
+    let px, py;
+    if (u < 0.45) {
+      // Highway curve stem
+      const t = u / 0.45;
+      px = cx - scale * 0.28 + Math.sin(t * Math.PI * 0.5) * scale * 0.14;
+      py = cy + scale * 0.36 - t * scale * 0.46;
+    } else {
+      // Loop of the 'P'
+      const t = ((u - 0.45) / 0.55) * Math.PI * 1.7 - Math.PI * 0.5;
+      px = cx - scale * 0.05 + Math.cos(t) * scale * 0.22;
+      py = cy - scale * 0.1 + Math.sin(t) * scale * 0.22;
+    }
+    pts.push({ x: px, y: py, type: 'road', color: '#E5F2EA' });
+  }
+
+  // 3. Dashed Lane Divider Points ~ 40 pts
+  const dashCount = 40;
+  for (let i = 0; i < dashCount; i++) {
+    const t = i / dashCount;
+    const px = cx - scale * 0.24 + Math.sin(t * Math.PI * 0.5) * scale * 0.12;
+    const py = cy + scale * 0.34 - t * scale * 0.44;
+    pts.push({ x: px, y: py, type: 'dash', color: '#ffffff' });
+  }
+
+  // 4. Location Pin in P Loop ~ 50 pts
+  const pinCount = 50;
+  for (let i = 0; i < pinCount; i++) {
+    const angle = (i / pinCount) * Math.PI * 2;
+    const pinR = scale * 0.06;
+    const px = cx - scale * 0.02 + Math.cos(angle) * pinR;
+    const py = cy - scale * 0.1 + Math.sin(angle) * pinR;
+    pts.push({ x: px, y: py, type: 'pin', color: '#34d399' });
+  }
+
+  return pts;
+}
+
+function initAstraPoints() {
+  const targetPoints = generateLogoTargetPoints();
+  particles = [];
+
+  for (let i = 0; i < TOTAL_PARTICLES; i++) {
+    const target = targetPoints[i % targetPoints.length];
+    
+    // Dispersed floating orbit coordinates
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 140 + Math.random() * (Math.max(width, height) * 0.55);
+    const fx = width / 2 + Math.cos(angle) * dist;
+    const fy = height / 2 + Math.sin(angle) * dist;
+
+    particles.push({
+      x: fx,
+      y: fy,
+      fx: fx,
+      fy: fy,
+      tx: target.x,
+      ty: target.y,
+      vx: (Math.random() - 0.5) * 0.8,
+      vy: (Math.random() - 0.5) * 0.8,
+      size: 1.5 + Math.random() * 2.5,
+      alpha: 0.2 + Math.random() * 0.6,
+      color: target.color || '#10b981',
+      pulse: Math.random() * Math.PI * 2,
+      type: target.type
+    });
+  }
+}
+
+initAstraPoints();
+
+// Animation Loop
+let animTime = 0;
+function renderAstra() {
+  requestAnimationFrame(renderAstra);
+  animTime += 0.02;
+
+  // Auto-Astra cycling if enabled
+  if (autoAstraAnim) {
+    targetScrollProgress += 0.008 * autoAstraDir;
+    if (targetScrollProgress >= 1) {
+      targetScrollProgress = 1;
+      autoAstraDir = -1;
+    } else if (targetScrollProgress <= 0) {
+      targetScrollProgress = 0;
+      autoAstraDir = 1;
+    }
+    document.getElementById('astraScrubber').value = targetScrollProgress;
+    updateAssemblyHud(targetScrollProgress);
+  }
+
+  // Smooth lerp for scroll progress
+  currentScrollProgress += (targetScrollProgress - currentScrollProgress) * 0.08;
+
+  ctx.clearRect(0, 0, width, height);
+
+  ctx.save();
+  ctx.strokeStyle = 'rgba(46, 125, 82, 0.04)';
+  ctx.lineWidth = 1;
+
+  // Draw assembling logo connections when progress > 0.35
+  if (currentScrollProgress > 0.35) {
+    const connAlpha = (currentScrollProgress - 0.35) / 0.65;
+    ctx.strokeStyle = `rgba(16, 185, 129, ${connAlpha * 0.22})`;
+    ctx.beginPath();
+    for (let i = 0; i < particles.length; i += 3) {
+      const p1 = particles[i];
+      const p2 = particles[(i + 1) % particles.length];
+      const d = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+      if (d < 45) {
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+      }
+    }
+    ctx.stroke();
+  }
+
+  // Draw & Update Particles
+  for (let i = 0; i < particles.length; i++) {
+    const p = particles[i];
+
+    // Ambient floating drift
+    p.fx += Math.cos(animTime + p.pulse) * 0.4;
+    p.fy += Math.sin(animTime + p.pulse) * 0.4;
+
+    // Convergence between floating (fx, fy) and assembled logo (tx, ty)
+    const ease = currentScrollProgress < 0.5 
+      ? 2 * currentScrollProgress * currentScrollProgress 
+      : 1 - Math.pow(-2 * currentScrollProgress + 2, 2) / 2;
+
+    const destX = p.fx + (p.tx - p.fx) * ease;
+    const destY = p.fy + (p.ty - p.fy) * ease;
+
+    // Mouse gentle repulsion
+    let mx = 0, my = 0;
+    if (mouse.active) {
+      const dx = destX - mouse.x;
+      const dy = destY - mouse.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 120 && dist > 0) {
+        const force = (120 - dist) / 120 * 18;
+        mx = (dx / dist) * force;
+        my = (dy / dist) * force;
+      }
+    }
+
+    p.x += ((destX + mx) - p.x) * 0.12;
+    p.y += ((destY + my) - p.y) * 0.12;
+
+    // Glow and render particle
+    const currentAlpha = p.alpha + Math.sin(animTime * 2 + p.pulse) * 0.15;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size * (1 + ease * 0.4), 0, Math.PI * 2);
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = Math.max(0.1, Math.min(1, currentAlpha + ease * 0.3));
+    ctx.shadowColor = p.color;
+    ctx.shadowBlur = ease > 0.6 ? 12 : 4;
+    ctx.fill();
+  }
+
+  // If fully assembled (progress > 0.6), render subtle central radiant aura
+  if (currentScrollProgress > 0.6) {
+    const auraAlpha = (currentScrollProgress - 0.6) / 0.4;
+    const grad = ctx.createRadialGradient(width / 2, height / 2, 20, width / 2, height / 2, 180);
+    grad.addColorStop(0, `rgba(16, 185, 129, ${auraAlpha * 0.18})`);
+    grad.addColorStop(0.5, `rgba(15, 81, 50, ${auraAlpha * 0.08})`);
+    grad.addColorStop(1, 'transparent');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, width, height);
+  }
+
+  ctx.restore();
+}
+
+renderAstra();
+
+
+/* ============================================================
+   2. PARKING MANAGEMENT CORE LOGIC & INTERACTION
+   ============================================================ */
+const total = 30;
+let selectedType = "Car";
+let selectedSlot = "";
+let selectedPayment = "UPI";
+let activeExit = null;
+let currentHub = "Central Plaza Hub";
+
+let vehicles = [
+  { vehicle: "KL 07 AB 1234", owner: "Arun Kumar", type: "Car", slot: "A-01", entry: new Date(Date.now() - 75 * 60000), status: "Parked" },
+  { vehicle: "KL 05 CD 4567", owner: "Meera Nair", type: "Two-Wheeler", slot: "A-02", entry: new Date(Date.now() - 42 * 60000), status: "Parked" },
+  { vehicle: "KL 11 EF 8910", owner: "Rahul Sen", type: "Car", slot: "B-03", entry: new Date(Date.now() - 130 * 60000), status: "Parked" },
+  { vehicle: "KL 14 GH 2222", owner: "Niya Joseph", type: "Heavy Vehicle", slot: "C-01", entry: new Date(Date.now() - 35 * 60000), status: "Parked" },
+  { vehicle: "MH 02 XY 9999", owner: "Devika Rao", type: "Car", slot: "A-06", entry: new Date(Date.now() - 190 * 60000), status: "Parked" },
+  { vehicle: "KA 01 ZZ 4433", owner: "Anand Verma", type: "Two-Wheeler", slot: "B-08", entry: new Date(Date.now() - 55 * 60000), status: "Parked" }
+];
+
+let transactions = [
+  { vehicle: "KL 08 XY 7788", type: "Car", slot: "B-01", entry: "08:40 AM", exit: "10:05 AM", amount: 250, status: "Paid" },
+  { vehicle: "KL 10 PQ 1100", type: "Two-Wheeler", slot: "C-04", entry: "09:10 AM", exit: "10:12 AM", amount: 150, status: "Paid" },
+  { vehicle: "KL 03 MN 9087", type: "Car", slot: "A-05", entry: "10:15 AM", exit: "12:20 PM", amount: 350, status: "Paid" },
+  { vehicle: "DL 09 CC 5521", type: "Heavy Vehicle", slot: "C-02", entry: "07:30 AM", exit: "11:45 AM", amount: 700, status: "Paid" }
+];
+
+function showView(id) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  const target = document.getElementById(id);
+  if (target) target.classList.add("active");
+
+  document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
+  const nav = document.querySelector(`[data-view="${id}"]`);
+  if (nav) nav.classList.add("active");
+
+  const titles = {
+    dashboard: "Dashboard",
+    entry: "Vehicle Entry",
+    exit: "Vehicle Exit",
+    payment: "Digital Payment",
+    success: "Payment Complete",
+    parking: "Parking Slots",
+    history: "Transactions"
+  };
+  document.getElementById("pageTitle").textContent = titles[id] || "ParkWise";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+document.querySelectorAll(".nav button").forEach(b => b.onclick = () => showView(b.dataset.view));
+
+function startEntry() {
+  resetEntry();
+  showView("entry");
+}
+
+function startEntryWithHub() {
+  resetEntry();
+  const qType = document.getElementById("quickVehicleType").value;
+  selectTypeByName(qType);
+  showView("entry");
+}
+
+function syncQuickType(val) {
+  selectTypeByName(val);
+}
+
+function changeHub(hubName) {
+  currentHub = hubName;
+  document.getElementById("topHubLabel").textContent = hubName + ": Online";
+  toast(`Switched parking hub to "${hubName}"`);
+  updateDashboard();
+}
+
+function selectTypeByName(tName) {
+  selectedType = tName;
+  document.querySelectorAll(".type-card").forEach(x => {
+    if (x.dataset.type === tName) x.classList.add("selected");
+    else x.classList.remove("selected");
+  });
+  updateRatesDisplay();
+}
+
+function startExit() {
+  showView("exit");
+}
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+function slots() {
+  return Array.from({ length: 30 }, (_, i) => ({
+    id: (i < 10 ? "A-" : i < 20 ? "B-" : "C-") + String((i % 10) + 1).padStart(2, "0")
+  }));
+}
+
+function occupiedMap() {
+  return Object.fromEntries(vehicles.filter(v => v.status === "Parked").map(v => [v.slot, v]));
+}
+
+function renderSlots(targetId, clickable = false) {
+  const box = document.getElementById(targetId);
+  if (!box) return;
+  const map = occupiedMap();
+  box.innerHTML = "";
+
+  slots().forEach(s => {
+    const occ = map[s.id];
+    const state = occ ? "occupied" : (selectedSlot === s.id ? "reserved" : "available");
+    const el = document.createElement("button");
+    el.type = "button";
+    el.className = "slot " + state;
+    el.innerHTML = `${s.id}<small>${occ ? "Occupied" : (selectedSlot === s.id ? "Selected" : "Available")}</small>`;
+    
+    el.onclick = () => {
+      if (clickable && !occ) {
+        document.querySelectorAll("#entrySlots .slot").forEach(x => x.classList.remove("reserved"));
+        el.classList.add("reserved");
+        selectedSlot = s.id;
+        const elTicketSlot = document.getElementById("ticketSelectedSlot");
+        if (elTicketSlot) elTicketSlot.textContent = s.id;
+        toast(`Slot ${s.id} selected!`);
+      } else {
+        openSlotModal(s.id, occ);
+      }
+    };
+    box.appendChild(el);
+  });
+}
+
+function openSlotModal(slotId, vehicleObj) {
+  const modal = document.getElementById("slotModal");
+  document.getElementById("modalSlotTitle").textContent = `Bay Details: ${slotId}`;
+  const body = document.getElementById("modalSlotBody");
+  const actions = document.getElementById("modalSlotActions");
+
+  if (vehicleObj) {
+    const mins = Math.max(1, Math.round((Date.now() - vehicleObj.entry.getTime()) / 60000));
+    body.innerHTML = `
+      <div class="ticket" style="margin-bottom: 0;">
+        <div class="ticket-row"><span>Status</span><strong style="color: #fb7185;">Occupied</strong></div>
+        <div class="ticket-row"><span>Vehicle Number</span><strong>${vehicleObj.vehicle}</strong></div>
+        <div class="ticket-row"><span>Owner</span><strong>${vehicleObj.owner}</strong></div>
+        <div class="ticket-row"><span>Type</span><strong>${vehicleObj.type}</strong></div>
+        <div class="ticket-row"><span>Parked For</span><strong>${mins} minutes</strong></div>
+      </div>
+    `;
+    actions.innerHTML = `
+      <button class="btn primary" onclick="closeSlotModal(); proceedExitFor('${vehicleObj.vehicle}');">Process Exit →</button>
+    `;
+  } else {
+    body.innerHTML = `
+      <div class="ticket" style="margin-bottom: 0;">
+        <div class="ticket-row"><span>Status</span><strong style="color: #34d399;">Available</strong></div>
+        <div class="ticket-row"><span>Location</span><strong>${currentHub}</strong></div>
+        <div class="ticket-row"><span>Level</span><strong>Floor ${slotId.startsWith('A') ? '1' : slotId.startsWith('B') ? '2' : '3'}</strong></div>
+        <div class="ticket-row"><span>Sensors</span><strong style="color: #34d399;">Active & Ready</strong></div>
+      </div>
+    `;
+    actions.innerHTML = `
+      <button class="btn primary" onclick="closeSlotModal(); bookSlotDirect('${slotId}');">Book This Slot →</button>
+    `;
+  }
+  modal.classList.add("open");
+}
+
+function closeSlotModal() {
+  document.getElementById("slotModal").classList.remove("open");
+}
+
+function proceedExitFor(vNum) {
+  document.getElementById("exitVehicle").value = vNum;
+  document.getElementById("exitSlot").value = "";
+  showView("exit");
+  findVehicle();
+}
+
+function bookSlotDirect(slotId) {
+  startEntry();
+  selectedSlot = slotId;
+}
+
+function openFeatureModal(feat) {
+  const modal = document.getElementById("featureModal");
+  const t = document.getElementById("featModalTitle");
+  const b = document.getElementById("featModalBody");
+
+  if (feat === 'location') {
+    t.textContent = "Location-Based Smart Guidance";
+    b.innerHTML = `
+      <p>ParkWise utilizes indoor GPS positioning and ultrasonic ground sensors to navigate drivers directly to their designated bay without driving in circles.</p>
+      <br>
+      <p>Available across 4 interconnected hubs: Central Plaza Multi-Level, Metro Station North Bay, Cyber City Tower 3, and Airport Terminal 2 VIP.</p>
+    `;
+  } else if (feat === 'security') {
+    t.textContent = "24/7 Monitored Safe & Secure Parking";
+    b.innerHTML = `
+      <p>Every bay is monitored by 4K AI-assisted cameras with automated license plate recognition (ALPR), fire sensors, and gated barrier passkeys.</p>
+      <br>
+      <p>Digital tickets are encrypted and verified upon exit to prevent vehicle theft or unauthorized drive-throughs.</p>
+    `;
+  }
+  modal.classList.add("open");
+}
+
+function closeFeatModal() {
+  document.getElementById("featureModal").classList.remove("open");
+}
+
+function updateDashboard() {
+  const occ = vehicles.filter(v => v.status === "Parked").length;
+  const avail = total - occ;
+
+  const elOcc = document.getElementById("occupiedSlots");
+  if (elOcc) elOcc.textContent = occ;
+  const elAvail = document.getElementById("availableSlots");
+  if (elAvail) elAvail.textContent = avail;
+  const elCap = document.getElementById("capacityText");
+  if (elCap) elCap.textContent = Math.round((occ / total) * 100) + "%";
+  const elAvailTxt = document.getElementById("availableText");
+  if (elAvailTxt) elAvailTxt.textContent = Math.round((avail / total) * 100) + "%";
+  const elCapFill = document.getElementById("capacityFill");
+  if (elCapFill) elCapFill.style.width = (occ / total * 100) + "%";
+  const elAvailFill = document.getElementById("availableFill");
+  if (elAvailFill) elAvailFill.style.width = (avail / total * 100) + "%";
+
+  const elUtil = document.getElementById("liveUtilStat");
+  if (elUtil) elUtil.textContent = Math.round((occ / total) * 100) + "%";
+
+  const elRev = document.getElementById("revenue");
+  if (elRev) {
+    const totalRev = 3450 + transactions.reduce((s, t) => s + (Number(t.amount) || 0), 0) - 750;
+    elRev.textContent = "₹" + totalRev.toLocaleString('en-IN');
+  }
+
+  renderSlots("miniSlots");
+  renderSlots("allSlots");
+  renderHistory();
+}
+
+function resetEntry() {
+  selectedType = "Car";
+  selectedSlot = "";
+  selectTypeByName("Car");
+
+  document.getElementById("owner").value = "";
+  const elEmail = document.getElementById("email");
+  if (elEmail) elEmail.value = "";
+  document.getElementById("vehicle").value = "";
+  document.getElementById("phone").value = "";
+  document.getElementById("model").value = "";
+  const elTicketSlot = document.getElementById("ticketSelectedSlot");
+  if (elTicketSlot) elTicketSlot.textContent = "None Selected";
+
+  document.querySelectorAll(".form-step").forEach(x => x.classList.remove("active"));
+  document.getElementById("entry1").classList.add("active");
+
+  document.querySelectorAll(".step").forEach(x => x.classList.remove("on"));
+  document.getElementById("s1").classList.add("on");
+}
+
+document.querySelectorAll(".type-card").forEach(c => {
+  c.onclick = () => {
+    selectTypeByName(c.dataset.type);
+  };
+});
+
+function updateRatesDisplay() {
+  const first = selectedType === "Two-Wheeler" ? 50 : selectedType === "Heavy Vehicle" ? 250 : 150;
+  const extra = selectedType === "Two-Wheeler" ? 30 : selectedType === "Heavy Vehicle" ? 150 : 100;
+  document.getElementById("firstRate").textContent = "₹" + first;
+  document.getElementById("extraRate").textContent = "₹" + extra;
+}
+
+function entryNext1() {
+  if (!selectedType) return toast("Please select a vehicle category.");
+  document.getElementById("entry1").classList.remove("active");
+  document.getElementById("entry2").classList.add("active");
+  document.getElementById("s2").classList.add("on");
+}
+
+function entryBack1() {
+  document.getElementById("entry2").classList.remove("active");
+  document.getElementById("entry1").classList.add("active");
+  document.getElementById("s2").classList.remove("on");
+}
+
+function entryNext2() {
+  const owner = document.getElementById("owner").value.trim();
+  const email = (document.getElementById("email")?.value || "").trim();
+  const vehicle = document.getElementById("vehicle").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+
+  if (!owner || !email || !vehicle || !phone) return toast("Please fill all required fields (*).");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toast("Please enter a valid email address.");
+  if (!/^\d{10}$/.test(phone)) return toast("Please enter a valid 10-digit mobile number.");
+  if (vehicles.some(v => v.vehicle.toLowerCase() === vehicle.toLowerCase() && v.status === "Parked")) {
+    return toast("This vehicle is already registered and parked inside.");
+  }
+
+  document.getElementById("ticketVehicle").textContent = vehicle.toUpperCase();
+  document.getElementById("ticketType").textContent = selectedType;
+  document.getElementById("ticketRate").textContent = document.getElementById("firstRate").textContent + " / 1st hour";
+
+  document.getElementById("entry2").classList.remove("active");
+  document.getElementById("entry3").classList.add("active");
+  document.getElementById("s3").classList.add("on");
+  renderSlots("entrySlots", true);
+}
+
+function entryBack2() {
+  document.getElementById("entry3").classList.remove("active");
+  document.getElementById("entry2").classList.add("active");
+  document.getElementById("s3").classList.remove("on");
+}
+
+function quickFillEntryDemo() {
+  const demos = [
+    { name: "Aditya Roy", email: "aditya.roy@example.com", plate: "KL 07 CM 9821", phone: "9876543210", model: "Tesla Model 3" },
+    { name: "Priya Menon", email: "priya.menon@example.com", plate: "DL 03 AK 7741", phone: "9123456780", model: "Kia Seltos" },
+    { name: "Rohan Varma", email: "rohan.varma@example.com", plate: "KA 05 MN 1188", phone: "9988776655", model: "Royal Enfield 350" }
+  ];
+  const d = demos[Math.floor(Math.random() * demos.length)];
+  document.getElementById("owner").value = d.name;
+  const elEmail = document.getElementById("email");
+  if (elEmail) elEmail.value = d.email;
+  document.getElementById("vehicle").value = d.plate;
+  document.getElementById("phone").value = d.phone;
+  document.getElementById("model").value = d.model;
+  toast("Filled demo vehicle details!");
+}
+
+function quickFillExitDemo() {
+  const parked = vehicles.filter(v => v.status === "Parked");
+  if (parked.length === 0) return toast("No vehicles parked currently.");
+  const p = parked[Math.floor(Math.random() * parked.length)];
+  document.getElementById("exitVehicle").value = p.vehicle;
+  document.getElementById("exitSlot").value = p.slot;
+  toast(`Selected ${p.vehicle} at Bay ${p.slot}`);
+  findVehicle();
+}
+
+function confirmEntry() {
+  if (!selectedSlot) return toast("Please select an available green parking slot.");
+  const vehicleNo = document.getElementById("vehicle").value.trim().toUpperCase();
+  const ownerName = document.getElementById("owner").value.trim();
+  const emailAddr = (document.getElementById("email")?.value || "").trim();
+
+  vehicles.push({
+    vehicle: vehicleNo,
+    owner: ownerName,
+    email: emailAddr,
+    type: selectedType,
+    slot: selectedSlot,
+    entry: new Date(),
+    status: "Parked"
+  });
+
+  saveSharedState();
+  toast(`Vehicle ${vehicleNo} allocated to Slot ${selectedSlot}! Pass sent to ${emailAddr}`);
+  updateDashboard();
+  showView("dashboard");
+}
+
+function findVehicle() {
+  const vn = document.getElementById("exitVehicle").value.trim().toUpperCase();
+  const sl = document.getElementById("exitSlot").value.trim().toUpperCase();
+
+  activeExit = vehicles.find(v => v.status === "Parked" && ((vn && v.vehicle === vn) || (sl && v.slot === sl)));
+  const out = document.getElementById("exitResult");
+
+  if (!activeExit) {
+    out.innerHTML = '<div class="empty">No active vehicle found matching those details. Check the license number or slot.</div>';
+    return;
+  }
+
+  const mins = Math.max(1, Math.round((Date.now() - activeExit.entry.getTime()) / 60000));
+  const hours = Math.ceil(mins / 60);
+  const first = activeExit.type === "Two-Wheeler" ? 50 : activeExit.type === "Heavy Vehicle" ? 250 : 150;
+  const extra = activeExit.type === "Two-Wheeler" ? 30 : activeExit.type === "Heavy Vehicle" ? 150 : 100;
+  const fee = first + Math.max(0, hours - 1) * extra;
+
+  activeExit.calc = { mins, hours, fee };
+
+  out.innerHTML = `
+    <div class="ticket">
+      <div class="ticket-row"><span>Driver / Owner</span><strong>${activeExit.owner}</strong></div>
+      <div class="ticket-row"><span>Vehicle License</span><strong>${activeExit.vehicle}</strong></div>
+      <div class="ticket-row"><span>Category</span><strong>${activeExit.type}</strong></div>
+      <div class="ticket-row"><span>Assigned Bay</span><strong>${activeExit.slot}</strong></div>
+      <div class="ticket-row"><span>Parked Duration</span><strong>${hours} hour${hours > 1 ? "s" : ""} (${mins} mins)</strong></div>
+      <div class="ticket-row"><span>Total Parking Fee</span><strong style="font-size: 22px; color: #34d399;">₹${fee}</strong></div>
+      <div class="actions" style="margin-top: 18px;">
+        <button class="btn primary" onclick="goPayment()">Proceed to Payment Gateway →</button>
+      </div>
+    </div>
+  `;
+}
+
+function goPayment() {
+  if (!activeExit) return;
+  document.getElementById("payVehicle").textContent = activeExit.vehicle;
+  document.getElementById("paySlot").textContent = activeExit.slot;
+  document.getElementById("payDuration").textContent = activeExit.calc.hours + " hour" + (activeExit.calc.hours > 1 ? "s" : "");
+  document.getElementById("payFee").textContent = "₹" + activeExit.calc.fee;
+  document.getElementById("payTotal").textContent = "₹" + activeExit.calc.fee;
+
+  selectedPayment = "UPI";
+  document.querySelectorAll(".pay").forEach(x => {
+    if (x.dataset.pay === "UPI") x.classList.add("selected");
+    else x.classList.remove("selected");
+  });
+  showView("payment");
+}
+
+document.querySelectorAll(".pay").forEach(p => {
+  p.onclick = () => {
+    document.querySelectorAll(".pay").forEach(x => x.classList.remove("selected"));
+    p.classList.add("selected");
+    selectedPayment = p.dataset.pay;
+  };
+});
+
+function completePayment() {
+  if (!selectedPayment) return toast("Please select a payment method.");
+  const now = new Date();
+  const a = activeExit;
+  a.status = "Exited";
+
+  transactions.unshift({
+    vehicle: a.vehicle,
+    type: a.type,
+    slot: a.slot,
+    entry: a.entry.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    exit: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    amount: a.calc.fee,
+    status: "Paid"
+  });
+
+  document.getElementById("receipt").innerHTML = `
+    <div class="ticket-row"><span>Receipt Bill ID</span><strong>PW-${Date.now().toString().slice(-6)}</strong></div>
+    <div class="ticket-row"><span>Vehicle License</span><strong>${a.vehicle}</strong></div>
+    <div class="ticket-row"><span>Parking Bay</span><strong>${a.slot}</strong></div>
+    <div class="ticket-row"><span>Duration Billed</span><strong>${a.calc.hours} hour${a.calc.hours > 1 ? "s" : ""}</strong></div>
+    <div class="ticket-row"><span>Payment Channel</span><strong>${selectedPayment} (Verified)</strong></div>
+    <div class="ticket-row"><span>Total Amount Settled</span><strong style="font-size: 22px; color: #34d399;">₹${a.calc.fee}</strong></div>
+  `;
+
+  saveSharedState();
+  updateDashboard();
+  showView("success");
+  activeExit = null;
+}
+
+function renderHistory() {
+  const q = (document.getElementById("historySearch")?.value || "").toLowerCase();
+  const body = document.getElementById("historyBody");
+  if (!body) return;
+
+  const rows = transactions.filter(t => t.vehicle.toLowerCase().includes(q) || t.slot.toLowerCase().includes(q));
+  body.innerHTML = rows.length
+    ? rows.map(t => `
+        <tr>
+          <td><b>${t.vehicle}</b></td>
+          <td>${t.type}</td>
+          <td><span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700;">${t.slot}</span></td>
+          <td>${t.entry}</td>
+          <td>${t.exit}</td>
+          <td><b>₹${t.amount}</b></td>
+          <td><span class="badge green">${t.status}</span></td>
+        </tr>
+      `).join("")
+    : '<tr><td colspan="7" class="empty">No matching transactions found.</td></tr>';
+}
+
+function printBill() {
+  window.print();
+}
+
+/* ============================================================
+   3. OWNER PIN SECURITY GATE & CROSS-PAGE STORAGE SYNC
+   ============================================================ */
+const OWNER_DEFAULT_PIN = "1234";
+
+function isConsoleUnlocked() {
+  return sessionStorage.getItem("parkwise_owner_unlocked") === "true";
+}
+
+function checkOwnerLockState() {
+  const gate = document.getElementById("ownerLockGate");
+  if (!gate) return;
+  if (isConsoleUnlocked()) {
+    gate.classList.add("unlocked");
+  } else {
+    gate.classList.remove("unlocked");
+    const pinIn = document.getElementById("ownerPinInput");
+    if (pinIn) {
+      pinIn.value = "";
+      setTimeout(() => pinIn.focus(), 150);
+    }
+  }
+}
+
+function unlockOwnerConsole() {
+  const pinInput = document.getElementById("ownerPinInput");
+  const err = document.getElementById("pinErrorMessage");
+  const val = (pinInput?.value || "").trim();
+
+  if (val === OWNER_DEFAULT_PIN) {
+    sessionStorage.setItem("parkwise_owner_unlocked", "true");
+    document.getElementById("ownerLockGate").classList.add("unlocked");
+    if (err) err.classList.add("hidden");
+    toast("🔓 Owner Console Unlocked!");
+  } else {
+    if (err) err.classList.remove("hidden");
+    if (pinInput) {
+      pinInput.classList.add("error");
+      pinInput.value = "";
+      setTimeout(() => pinInput.classList.remove("error"), 600);
+    }
+  }
+}
+
+function lockOwnerConsole() {
+  sessionStorage.removeItem("parkwise_owner_unlocked");
+  const gate = document.getElementById("ownerLockGate");
+  if (gate) gate.classList.remove("unlocked");
+  const pinInput = document.getElementById("ownerPinInput");
+  if (pinInput) {
+    pinInput.value = "";
+    pinInput.focus();
+  }
+  const err = document.getElementById("pinErrorMessage");
+  if (err) err.classList.add("hidden");
+  toast("🔒 Owner Console Locked.");
+}
+
+function pressPinDigit(digit) {
+  const pinInput = document.getElementById("ownerPinInput");
+  if (pinInput && pinInput.value.length < 4) {
+    pinInput.value += digit;
+    if (pinInput.value.length === 4) {
+      setTimeout(unlockOwnerConsole, 120);
+    }
+  }
+}
+
+function clearPin() {
+  const pinInput = document.getElementById("ownerPinInput");
+  if (pinInput) pinInput.value = "";
+  const err = document.getElementById("pinErrorMessage");
+  if (err) err.classList.add("hidden");
+}
+
+function backspacePin() {
+  const pinInput = document.getElementById("ownerPinInput");
+  if (pinInput) pinInput.value = pinInput.value.slice(0, -1);
+}
+
+function handlePinKey(e) {
+  if (e.key === "Enter") {
+    unlockOwnerConsole();
+  }
+}
+
+function quickUnlockDemo() {
+  const pinInput = document.getElementById("ownerPinInput");
+  if (pinInput) pinInput.value = "1234";
+  unlockOwnerConsole();
+}
+
+function loadSharedState() {
+  try {
+    const v = localStorage.getItem("parkwise_vehicles");
+    if (v) {
+      const parsed = JSON.parse(v);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        vehicles = parsed.map(item => ({
+          ...item,
+          entry: new Date(item.entry)
+        }));
+      }
+    }
+    const t = localStorage.getItem("parkwise_transactions");
+    if (t) {
+      const parsedT = JSON.parse(t);
+      if (Array.isArray(parsedT) && parsedT.length > 0) {
+        transactions = parsedT;
+      }
+    }
+  } catch (e) {
+    console.error("Shared state load error:", e);
+  }
+}
+
+function saveSharedState() {
+  try {
+    localStorage.setItem("parkwise_vehicles", JSON.stringify(vehicles));
+    localStorage.setItem("parkwise_transactions", JSON.stringify(transactions));
+  } catch (e) {
+    console.error("Shared state save error:", e);
+  }
+}
+
+// Listen for cross-tab updates from website.html
+window.addEventListener("storage", (e) => {
+  if (e.key === "parkwise_vehicles" || e.key === "parkwise_transactions") {
+    loadSharedState();
+    updateDashboard();
+  }
+});
+
+// Initial boot
+loadSharedState();
+saveSharedState();
+checkOwnerLockState();
+updateDashboard();
+resetEntry();
+</script>
+</body>
+</html>

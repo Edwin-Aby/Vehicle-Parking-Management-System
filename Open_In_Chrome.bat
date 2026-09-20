@@ -1,0 +1,9 @@
+@echo off
+title Launching ParkWise in Chrome...
+echo Opening ParkWise Smart Parking System in Google Chrome...
+start chrome.exe "%~dp0website.html"
+if %ERRORLEVEL% NEQ 0 (
+    echo Chrome not in PATH, opening with default browser...
+    start "" "%~dp0website.html"
+)
+exit
