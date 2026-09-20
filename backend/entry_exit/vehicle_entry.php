@@ -36,21 +36,8 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 }
 
 
-// Read JSON input
-$data = json_decode(file_get_contents("php://input"), true);
-
-if (!$data) {
-    echo json_encode([
-        "success" => false,
-        "message" => "Invalid JSON data"
-    ]);
-    exit;
-}
-
-
-// Get booking ID
-$booking_id = $data["booking_id"] ?? null;
-
+// Read booking ID from POST data
+$booking_id = $_POST["booking_id"] ?? null;
 
 // Validate booking ID
 if ($booking_id === null || !is_numeric($booking_id)) {
